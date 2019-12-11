@@ -1,10 +1,11 @@
 class Program():
-    def __init__(self, opcodes):
+    def __init__(self, opcodes, inputs=None):
         self.opcodes = opcodes.copy()
         self.pc = 0
         self.base = 0
+        self.inputs = inputs
 
-    def compute(self, inputs=None):
+    def compute(self):
         while (opcode := self.opcodes[self.pc]) != 99:
             if opcode % 100 == 1:
                 # add
@@ -22,13 +23,13 @@ class Program():
                 self.pc += 4
             elif opcode % 100 == 3:
                 # in
-                self.memset(1, inputs.pop() if inputs else int(input('Enter value : ')))
+                self.memset(1, self.getInput())
                 self.pc += 2
             elif opcode % 10 == 4:
                 # out
                 value = self.memget(1)
                 self.pc += 2
-                print('Output : {}'.format(value))
+                self.output(value)
             elif opcode % 100 == 5:
                 # jmp nz
                 operand1 = self.memget(1)
@@ -111,6 +112,12 @@ class Program():
                 self.opcodes.extend([0] * (index - len(self.opcodes) + 1))
                 return self.memget(offset)
 
+    def getInput(self):
+        return self.inputs.pop() if self.inputs else int(input('Enter value : '))
+
+    def output(self, value):
+        print('Output : {}'.format(value))
+
 
 def main():
     with open('input9.txt') as file:
@@ -119,5 +126,5 @@ def main():
     program.compute()
 
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     main()
